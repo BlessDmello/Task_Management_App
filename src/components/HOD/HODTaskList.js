@@ -4,22 +4,18 @@ import { getTasksByHOD, updateTaskStatus } from '../../services/taskService';
 const HODTaskList = () => {
   const [tasks, setTasks] = useState([]);
   const username = localStorage.getItem('username');
-  
-//   useEffect(() => {
-//     const taskList = getTasksByHOD(username);
-//     setTasks(taskList);
-//   }, [username]);
-useEffect(() => {
+
+  useEffect(() => {
     fetchTasks();
   }, []);
 
-  const fetchTasks = async () => {
-    const taskList = await getTasksByHOD(username);
+  const fetchTasks = () => {
+    const taskList = getTasksByHOD(username);
     setTasks(taskList);
   };
 
   const handleMarkComplete = async (taskId) => {
-    const success = await updateTaskStatus(taskId, 'completed'); // API call or local update
+    const success = await updateTaskStatus(taskId, 'completed');
     if (success) {
       setTasks(prevTasks =>
         prevTasks.map(task =>
@@ -30,11 +26,11 @@ useEffect(() => {
       alert('Failed to update task status.');
     }
   };
-  
+
   return (
     <div>
       <h2>My Tasks</h2>
-      
+
       {tasks.length === 0 ? (
         <div className="alert alert-info">No tasks assigned to you yet.</div>
       ) : (
@@ -57,17 +53,17 @@ useEffect(() => {
                   <td>{task.title}</td>
                   <td>{task.description}</td>
                   <td>
-                    <span className={`badge ${
-                      task.status === 'completed' ? 'bg-success' : 'bg-warning'
-                    }`}>
+                    <span className={`badge ${task.status === 'completed' ? 'bg-success' : 'bg-warning'}`}>
                       {task.status}
                     </span>
                   </td>
                   <td>{task.createdAt}</td>
                   <td>
-                    <button className="btn btn-sm btn-success" onClick={() => handleMarkComplete(task.id)}>
-                      Mark Complete
-                    </button>
+                    {task.status !== 'completed' && (
+                      <button className="btn btn-sm btn-success" onClick={() => handleMarkComplete(task.id)}>
+                        Mark Complete
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
