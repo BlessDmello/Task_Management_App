@@ -1,27 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { getTasksByHOD, updateTaskStatus } from '../../services/taskService';
 
 const HODTaskList = () => {
   const [tasks, setTasks] = useState([]);
   const username = localStorage.getItem('username');
+  // Use useCallback to prevent function recreation
+  const fetchTasks = useCallback(() => {
+    const taskList = getTasksByHOD(username);
+    setTasks(taskList);
+  }, [username]); // Dependencies
 
   useEffect(() => {
     fetchTasks();
   }, [fetchTasks]);
 
-  const fetchTasks = () => {
-    const taskList = getTasksByHOD(username);
-    setTasks(taskList);
-  };
-
   const handleMarkComplete = async (taskId) => {
     const success = await updateTaskStatus(taskId, 'completed');
     if (success) {
-      setTasks(prevTasks =>
-        prevTasks.map(task =>
-          task.id === taskId ? { ...task, status: 'completed' } : task
-        )
-      );
+    fetchTasks(); 
     } else {
       alert('Failed to update task status.');
     }
