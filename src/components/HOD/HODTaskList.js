@@ -7,7 +7,7 @@ const HODTaskList = () => {
 
   useEffect(() => {
     fetchTasks();
-  }, []);
+  }, [fetchTasks]);
 
   const fetchTasks = () => {
     const taskList = getTasksByHOD(username);
